@@ -12,7 +12,7 @@ export default function RoomCreator({ onRoomCreated }: Props) {
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
   const { token } = useAuth();
-
+  const [error, setError] = useState<String | null>(null);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim() || !token) return;
@@ -24,6 +24,10 @@ export default function RoomCreator({ onRoomCreated }: Props) {
       onRoomCreated();
     } catch (err) {
       console.error("Failed to create room:", err);
+      setError(
+        err instanceof Error ? err.message : "Unknown Error With Room Creation",
+      );
+      setTimeout(() => setError(null), 2500); // hide error message after 2.5 seconds
     } finally {
       setLoading(false);
     }
@@ -31,6 +35,9 @@ export default function RoomCreator({ onRoomCreated }: Props) {
 
   return (
     <form onSubmit={handleSubmit} className="p-3 border-t border-gray-700">
+      <div className="p-3 border-t border-gray-700">
+        {error && <div className="text-red-400 text-sm mb-2">{error}</div>}
+      </div>
       <div className="flex gap-2">
         <input
           type="text"
